@@ -7,8 +7,8 @@ module.exports = function(grunt) {
           options: {
             engine: "gm",
             sizes: [{
-              width:80,
-              qualitiy:10
+              width: 700,
+              quality:20
             }]
           },
 
