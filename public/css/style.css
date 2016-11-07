@@ -1,6 +1,3 @@
-/** {
-  outline: 1px solid red !important;
-}*/
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -30,8 +27,8 @@ form {
 }
 
 .mover {
-  position: fixed;
-  width: 256px;
+  position: fixed;;
+  width: 73.33px;
   z-index: -1;
 }
 

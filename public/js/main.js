@@ -378,7 +378,7 @@ var pizzaElementGenerator = function(i) {
   pizzaContainer.id = "pizza" + i;                // gives each pizza element a unique id
   pizzaImageContainer.style.width="35%";
 
-  pizzaImage.src = "images/pizza.png";
+  pizzaImage.src = "../public/images/pizza.png";
   pizzaImage.classList.add("img-responsive");
   pizzaImageContainer.appendChild(pizzaImage);
   pizzaContainer.appendChild(pizzaImageContainer);
@@ -516,9 +516,9 @@ function updatePositions() {
   window.performance.mark("mark_start_frame");
 
   var items = document.querySelectorAll('.mover');
-  var scrollY = document.body.scrollTop;
+  var scrollY = (document.body.scrollTop / 1250);
   for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((scrollY / 1250) + (i % 5));
+    var phase = Math.sin(scrollY + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
 
@@ -526,6 +526,7 @@ function updatePositions() {
   // Super easy to create custom metrics.
   window.performance.mark("mark_end_frame");
   window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
+
   if (frame % 10 === 0) {
     var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
     logAverageFrame(timesToUpdatePosition);
@@ -537,14 +538,14 @@ window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
-  var cols = 8;
+  var cols = 4;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+  for (var i = 0; i < 16; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
-    elem.src = "images/pizza-80.png";
-    elem.style.height = "100px";
-    elem.style.width = "73.333px";
+    elem.src = "../public/images/pizza.png";
+    // elem.style.height = "100px";
+    // elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);

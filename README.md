@@ -30,6 +30,7 @@ There is always some time to do some housekeeping.
 - Placed all css, js, images in their respective folders.
 - All sub-section HTMLs are placed under _views_ folder.
 - Added _alt_ on all images.
+- Placed all cacheable files on _public_ folder.
 
 ## III. Optimization Actions
 #### Increasing Page Speed Score
@@ -48,19 +49,12 @@ Inlined and minified all JS scripts.
 Reduced filesize of images to optimal sizes using [Kraken](https://kraken.io/web-interface) compression tool.
 
 ###### Gzip compression
-Added .htaccess file to project folder and, in it, added the script below to enable mod_deflate that compresses the files.
+Configured Apache serve httpd.conf to enable module_deflate and [compress my files with gzip.](https://www.devside.net/guides/config/compression)
 
 ###### Leverage Browsing Cache
-Added cache timing to certain files of my site that are cacheble. I made sure that the mod_headers on my Apache Server httpd.conf is activated by removing the `#` on my WAMP folder. 
-
-###### Full .htaccess
+Added cache timing to certain files of my site that are cacheble. I made sure that the mod_headers on my Apache Server httpd.conf is activated by removing the `#` on my WAMP folder. [Cache Control] (https://varvy.com/pagespeed/cache-control.html#basics)
 
 ```sh
-<IfModule mod_deflate.c>
-  <FilesMatch "\.(ico|jpg|jpeg|png|gif|js|css|html|php|txt|xml)$">
-    SetOutputFilter DEFLATE
-  </FilesMatch>
-
   # One year for image files
   <FilesMatch ".(jpg|jpeg|png|gif|ico)$">
     Header set Cache-Control "max-age=31536000, public"
@@ -70,6 +64,52 @@ Added cache timing to certain files of my site that are cacheble. I made sure th
   <FilesMatch ".(css|js)$">
     Header set Cache-Control "max-age=2628000, public"
   </FilesMatch>
+```
+## IV. Animation Optimization
+###### Reduced Pizzas Loaded
+Some of the pizzas being loaded in the background are in excess. Only 16 Pizzas are seen on the screen. Reduced loop iteration from 200 to 15 and columns from 8 to 4.
 
-</IfModule>
+```
+document.addEventListener('DOMContentLoaded', function() {
+  var cols = 4; //4 columns is enough instead of 8.
+  var s = 256;
+  for (var i = 0; i < 16; i++) { //only need 16 pizzas on the grid
+    var elem = document.createElement('img');
+    elem.className = 'mover';
+    elem.src = "../public/images/pizza.png";
+    //prevents pizzas from resizing
+    //elem.style.height = "100px";
+    //elem.style.width = "73.333px";
+    elem.basicLeft = (i % cols) * s;
+    elem.style.top = (Math.floor(i / cols) * s) + 'px';
+    document.querySelector("#movingPizzas1").appendChild(elem);
+  }
+  updatePositions();
+});
+```
+
+####### Optmized the updatePositions FSL
+Batched processed the `updatePositions` function by creating `scrollY` variable and removing it from the loop.
+
+```
+function updatePositions() {
+  frame++;
+  window.performance.mark("mark_start_frame");
+
+  var items = document.querySelectorAll('.mover');
+  var scrollY = (document.body.scrollTop / 1250);
+  for (var i = 0; i < items.length; i++) {
+    var phase = Math.sin(scrollY + (i % 5));
+    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  }
+
+  // User Timing API to the rescue again. Seriously, it's worth learning.
+  // Super easy to create custom metrics.
+  window.performance.mark("mark_end_frame");
+  window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
+  if (frame % 10 === 0) {
+    var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
+    logAverageFrame(timesToUpdatePosition);
+  }
+}
 ```
