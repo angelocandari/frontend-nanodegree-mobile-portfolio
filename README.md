@@ -67,19 +67,18 @@ Added cache timing to certain files of my site that are cacheble. I made sure th
 ```
 ## IV. Animation Optimization
 ###### Reduced Pizzas Loaded
-Some of the pizzas being loaded in the background are in excess. Only 16 Pizzas are seen on the screen. Reduced loop iteration from 200 to 15 and columns from 8 to 4.
+Some of the pizzas being loaded in the background are in excess. Reduced loop iteration from 200 to 24.
 
 ```
 document.addEventListener('DOMContentLoaded', function() {
-  var cols = 4; //4 columns is enough instead of 8.
+  var cols = 8;
   var s = 256;
-  for (var i = 0; i < 16; i++) { //only need 16 pizzas on the grid
+  for (var i = 0; i < 25; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "../public/images/pizza.png";
-    //prevents pizzas from resizing
-    //elem.style.height = "100px";
-    //elem.style.width = "73.333px";
+    elem.style.height = "100px";
+    elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
@@ -112,4 +111,9 @@ function updatePositions() {
     logAverageFrame(timesToUpdatePosition);
   }
 }
+```
+
+###### Query Selectors
+Replaced querySelectorAll() with getElementsByClassName().
+
 ```
